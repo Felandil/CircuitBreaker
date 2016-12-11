@@ -10,12 +10,17 @@ namespace Felandil.CircuitBreaker.Tests
   /// </summary>
   internal class InMemoryCircuitBreakerStateStorage : CircuitBreakerStorage
   {
-    #region Public Properties
+    #region Properties
 
     /// <summary>
     /// Gets or sets the fail counter.
     /// </summary>
-    public override int FailCounter { get; protected set; }
+    protected override int FailCounter { get; set; }
+
+    /// <summary>
+    /// Gets or sets the success counter.
+    /// </summary>
+    protected override int SuccessCounter { get; set; }
 
     #endregion
   }

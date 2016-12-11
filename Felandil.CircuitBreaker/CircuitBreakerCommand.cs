@@ -83,12 +83,7 @@ namespace Felandil.CircuitBreaker
     {
       try
       {
-        if (this.IsOpen)
-        {
-          throw new Exception();
-        }
-
-        return this.Action(args);
+        return this.IsOpen ? this.HandleOpened(args) : this.Action(args);
       }
       catch (Exception exception)
       {
@@ -132,6 +127,50 @@ namespace Felandil.CircuitBreaker
     {
       this.StateStorage.HandleException(exception);
       return this.Fallback();
+    }
+
+    /// <summary>
+    /// The handle opened.
+    /// </summary>
+    /// <param name="args">
+    /// The args.
+    /// </param>
+    /// <returns>
+    /// The <see cref="TOut"/>.
+    /// </returns>
+    private TOut HandleOpened(TInput args)
+    {
+      if (!this.OpenWaitTimeExpired())
+      {
+        throw new CircuitBreakerOpenException(this.StateStorage.LastException);
+      }
+
+      try
+      {
+        this.StateStorage.HalfOpen();
+
+        var result = this.Action(args);
+
+        this.StateStorage.HandleOpenedSuccess();
+
+        return result;
+      }
+      catch (Exception exception)
+      {
+        this.StateStorage.Trip(exception);
+        throw;
+      }
+    }
+
+    /// <summary>
+    /// The open wait time expired.
+    /// </summary>
+    /// <returns>
+    /// The <see cref="bool"/>.
+    /// </returns>
+    private bool OpenWaitTimeExpired()
+    {
+      return this.StateStorage.LastStateChangedDateUtc + this.StateStorage.OpenToHalfOpenWaitTime < DateTime.UtcNow;
     }
 
     #endregion

@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircuitBreakerCommand.cs" />
+    <Compile Include="CircuitBreakerOpenException.cs" />
     <Compile Include="CircuitBreakerState.cs" />
     <Compile Include="CircuitBreakerStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -27,11 +27,6 @@ namespace Felandil.CircuitBreaker
     #region Public Properties
 
     /// <summary>
-    /// Gets or sets the fail counter.
-    /// </summary>
-    public abstract int FailCounter { get; protected set; }
-
-    /// <summary>
     /// Gets the fail threshold.
     /// </summary>
     public int FailThreshold
@@ -59,14 +54,50 @@ namespace Felandil.CircuitBreaker
     public Exception LastException { get; private set; }
 
     /// <summary>
-    /// Gets or sets the last state changed date utc.
+    /// Gets the last state changed date utc.
     /// </summary>
-    public DateTime LastStateChangedDateUtc { get; protected set; }
+    public DateTime LastStateChangedDateUtc { get; private set; }
+
+    /// <summary>
+    /// Gets the open to half open wait time.
+    /// </summary>
+    public TimeSpan OpenToHalfOpenWaitTime
+    {
+      get
+      {
+        return new TimeSpan(0, 0, 0, 0, 500);
+      }
+    }
 
     /// <summary>
     /// Gets the state.
     /// </summary>
     public CircuitBreakerState State { get; private set; }
+
+    /// <summary>
+    /// Gets the success threshold.
+    /// </summary>
+    public int SuccessThreshold
+    {
+      get
+      {
+        return 5;
+      }
+    }
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the fail counter.
+    /// </summary>
+    protected abstract int FailCounter { get; set; }
+
+    /// <summary>
+    /// Gets or sets the success counter.
+    /// </summary>
+    protected abstract int SuccessCounter { get; set; }
 
     #endregion
 
@@ -86,6 +117,7 @@ namespace Felandil.CircuitBreaker
     public void Reset()
     {
       this.State = CircuitBreakerState.Closed;
+      this.FailCounter = 0;
     }
 
     /// <summary>
@@ -97,6 +129,7 @@ namespace Felandil.CircuitBreaker
     public void Trip(Exception ex)
     {
       this.State = CircuitBreakerState.Open;
+      this.LastStateChangedDateUtc = DateTime.UtcNow;
     }
 
     #endregion
@@ -114,9 +147,22 @@ namespace Felandil.CircuitBreaker
       this.FailCounter++;
       this.LastException = exception;
 
-      if (this.FailCounter >= this.FailThreshold)
+      if (this.FailCounter == this.FailThreshold)
       {
         this.Trip(exception);
+      }
+    }
+
+    /// <summary>
+    /// The handle opened success.
+    /// </summary>
+    internal void HandleOpenedSuccess()
+    {
+      this.SuccessCounter++;
+
+      if (this.SuccessCounter >= this.SuccessThreshold)
+      {
+        this.Reset();
       }
     }
 

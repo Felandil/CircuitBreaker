@@ -5,6 +5,8 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace Felandil.CircuitBreaker.Tests
 {
+  using System.Diagnostics;
+
   using Microsoft.VisualStudio.TestTools.UnitTesting;
 
   /// <summary>
@@ -72,8 +74,39 @@ namespace Felandil.CircuitBreaker.Tests
 
       var result = command.Execute(1);
 
+      Assert.IsInstanceOfType(breakerStateStorage.LastException, typeof(CircuitBreakerOpenException));
       Assert.AreEqual(breakerStateStorage.FailThreshold, command.ActionCalledCounter);
       Assert.AreEqual(10, result);
+    }
+
+    /// <summary>
+    /// The test circuit is open should close after defined successfull calls.
+    /// </summary>
+    [TestMethod]
+    public void TestCircuitIsOpenShouldSkipCallsForDefinedTimeSpanAndCloseAfterDefinedSuccessfullCalls()
+    {
+      var breakerStateStorage = new InMemoryCircuitBreakerStateStorage();
+      var command = new CircuitBreakerOpenClosedCommand(breakerStateStorage);
+      while (command.IsClosed)
+      {
+        SafeExecute(command);
+      }
+
+      var stopwatch = new Stopwatch();
+
+      stopwatch.Start();
+      while (command.IsOpen)
+      {
+        command.Execute(1);
+
+        if (stopwatch.ElapsedMilliseconds > 550)
+        {
+          Assert.Fail();
+        }
+      }
+
+      Assert.AreEqual(500, stopwatch.ElapsedMilliseconds);
+      Assert.IsTrue(command.IsClosed);
     }
 
     #endregion
@@ -86,7 +119,7 @@ namespace Felandil.CircuitBreaker.Tests
     /// <param name="command">
     /// The command.
     /// </param>
-    private static void SafeExecute(CircuitBreakerFailingCommand command)
+    private static void SafeExecute(CircuitBreakerCommand<int, int> command)
     {
       try
       {
