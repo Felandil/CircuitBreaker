@@ -12,6 +12,9 @@ namespace Felandil.CircuitBreaker.Tests
   /// </summary>
   internal class CircuitBreakerFailingCommand : CircuitBreakerCommand<int, int>
   {
+    /// <summary>
+    /// The action called counter.
+    /// </summary>
     internal int ActionCalledCounter = 0;
 
     #region Constructors and Destructors

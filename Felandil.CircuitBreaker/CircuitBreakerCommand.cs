@@ -10,18 +10,18 @@ namespace Felandil.CircuitBreaker
   /// <summary>
   /// The circuit breaker command.
   /// </summary>
+  /// <typeparam name="TIn">
+  /// The input value
+  /// </typeparam>
   /// <typeparam name="TOut">
   /// The return value
   /// </typeparam>
-  /// <typeparam name="TInput">
-  /// The input value
-  /// </typeparam>
-  public abstract class CircuitBreakerCommand<TOut, TInput>
+  public abstract class CircuitBreakerCommand<TIn, TOut>
   {
     #region Constructors and Destructors
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CircuitBreakerCommand{TOut,TInput}"/> class. 
+    /// Initializes a new instance of the <see cref="CircuitBreakerCommand{TIn,TOut}"/> class. 
     /// </summary>
     /// <param name="stateStorage">
     /// The state storage.
@@ -29,6 +29,7 @@ namespace Felandil.CircuitBreaker
     protected CircuitBreakerCommand(CircuitBreakerStorage stateStorage)
     {
       this.StateStorage = stateStorage;
+      this.StateStorage.Init(this.GetType().Name);
     }
 
     #endregion
@@ -64,7 +65,7 @@ namespace Felandil.CircuitBreaker
     /// <summary>
     /// Gets or sets the state.
     /// </summary>
-    private CircuitBreakerStorage StateStorage { get; set; }
+    protected CircuitBreakerStorage StateStorage { get; set; }
 
     #endregion
 
@@ -79,7 +80,7 @@ namespace Felandil.CircuitBreaker
     /// <returns>
     /// The <see cref="TOut"/>.
     /// </returns>
-    public TOut Execute(TInput args)
+    public TOut Execute(TIn args)
     {
       try
       {
@@ -104,7 +105,7 @@ namespace Felandil.CircuitBreaker
     /// <returns>
     /// The <see cref="T"/>.
     /// </returns>
-    protected abstract TOut Action(TInput args);
+    protected abstract TOut Action(TIn args);
 
     /// <summary>
     /// The fallback.
@@ -138,7 +139,7 @@ namespace Felandil.CircuitBreaker
     /// <returns>
     /// The <see cref="TOut"/>.
     /// </returns>
-    private TOut HandleOpened(TInput args)
+    private TOut HandleOpened(TIn args)
     {
       if (!this.OpenWaitTimeExpired())
       {

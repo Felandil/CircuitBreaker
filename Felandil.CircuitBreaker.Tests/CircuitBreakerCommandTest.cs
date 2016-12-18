@@ -99,13 +99,13 @@ namespace Felandil.CircuitBreaker.Tests
       {
         command.Execute(1);
 
-        if (stopwatch.ElapsedMilliseconds > 550)
+        if (stopwatch.ElapsedMilliseconds > 1050)
         {
           Assert.Fail();
         }
       }
 
-      Assert.AreEqual(500, stopwatch.ElapsedMilliseconds);
+      Assert.AreEqual(1000, stopwatch.ElapsedMilliseconds);
       Assert.IsTrue(command.IsClosed);
     }
 

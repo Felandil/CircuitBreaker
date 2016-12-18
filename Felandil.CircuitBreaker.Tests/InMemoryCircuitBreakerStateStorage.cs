@@ -15,12 +15,12 @@ namespace Felandil.CircuitBreaker.Tests
     /// <summary>
     /// Gets or sets the fail counter.
     /// </summary>
-    protected override int FailCounter { get; set; }
+    public override int FailCounter { get; protected set; }
 
     /// <summary>
     /// Gets or sets the success counter.
     /// </summary>
-    protected override int SuccessCounter { get; set; }
+    public override int SuccessCounter { get; protected set; }
 
     #endregion
   }

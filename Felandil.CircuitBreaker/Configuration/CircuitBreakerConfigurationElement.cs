@@ -11,7 +11,7 @@ namespace Felandil.CircuitBreaker.Configuration
   /// <summary>
   /// The circuit breaker default configuration element.
   /// </summary>
-  public class CircuitBreakerConfigurationElement : ConfigurationElement
+  internal class CircuitBreakerConfigurationElement : ConfigurationElement
   {
     #region Public Properties
 

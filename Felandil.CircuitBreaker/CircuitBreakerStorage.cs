@@ -7,6 +7,8 @@ namespace Felandil.CircuitBreaker
 {
   using System;
 
+  using Felandil.CircuitBreaker.Configuration;
+
   /// <summary>
   /// The CircuitBreakerStorage interface.
   /// </summary>
@@ -27,24 +29,18 @@ namespace Felandil.CircuitBreaker
     #region Public Properties
 
     /// <summary>
+    /// Gets or sets the fail counter.
+    /// </summary>
+    public abstract int FailCounter { get; protected set; }
+
+    /// <summary>
     /// Gets the fail threshold.
     /// </summary>
     public int FailThreshold
     {
       get
       {
-        return 10;
-      }
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether is closed.
-    /// </summary>
-    public bool IsClosed
-    {
-      get
-      {
-        return this.State == CircuitBreakerState.Closed;
+        return CircuitBreakerConfiguration.FailureThresholdByCommand(this.CommandName);
       }
     }
 
@@ -65,7 +61,7 @@ namespace Felandil.CircuitBreaker
     {
       get
       {
-        return new TimeSpan(0, 0, 0, 0, 500);
+        return CircuitBreakerConfiguration.OpenTimeByCommand(this.CommandName);
       }
     }
 
@@ -75,13 +71,18 @@ namespace Felandil.CircuitBreaker
     public CircuitBreakerState State { get; private set; }
 
     /// <summary>
+    /// Gets or sets the success counter.
+    /// </summary>
+    public abstract int SuccessCounter { get; protected set; }
+
+    /// <summary>
     /// Gets the success threshold.
     /// </summary>
     public int SuccessThreshold
     {
       get
       {
-        return 5;
+        return CircuitBreakerConfiguration.SuccessThresholdByCommand(this.CommandName);
       }
     }
 
@@ -90,14 +91,9 @@ namespace Felandil.CircuitBreaker
     #region Properties
 
     /// <summary>
-    /// Gets or sets the fail counter.
+    /// Gets the command name.
     /// </summary>
-    protected abstract int FailCounter { get; set; }
-
-    /// <summary>
-    /// Gets or sets the success counter.
-    /// </summary>
-    protected abstract int SuccessCounter { get; set; }
+    protected string CommandName { get; private set; }
 
     #endregion
 
@@ -164,6 +160,17 @@ namespace Felandil.CircuitBreaker
       {
         this.Reset();
       }
+    }
+
+    /// <summary>
+    /// The init.
+    /// </summary>
+    /// <param name="commandName">
+    /// The command name.
+    /// </param>
+    internal void Init(string commandName)
+    {
+      this.CommandName = commandName;
     }
 
     #endregion
