@@ -24,7 +24,7 @@ namespace Felandil.CircuitBreaker.Example
     private static void Main(string[] args)
     {
       var storage = new CircuitBreakerDefaultStorage();
-      var command = new ExampleCircuitBreakerCommand(storage);
+      var command = new GeocodingCircuitBreakerCommand(storage);
 
       var stopwatch = new Stopwatch();
       stopwatch.Start();
