@@ -51,6 +51,8 @@
     <Compile Include="Configuration\CircuitBreakerConfigurationCollection.cs" />
     <Compile Include="Configuration\CircuitBreakerConfigurationSection.cs" />
     <Compile Include="Configuration\CircuitBreakerConfigurationElement.cs" />
+    <Compile Include="Configuration\CircuitBreakerMemoryConfigurationCache.cs" />
+    <Compile Include="Configuration\IConfigurationCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

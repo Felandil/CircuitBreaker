@@ -19,9 +19,21 @@ namespace Felandil.CircuitBreaker
     /// <summary>
     /// Initializes a new instance of the <see cref="CircuitBreakerStorage"/> class.
     /// </summary>
-    protected CircuitBreakerStorage()
+    public CircuitBreakerStorage()
+      : this(new CircuitBreakerConfiguration())
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CircuitBreakerStorage"/> class.
+    /// </summary>
+    /// <param name="configuration">
+    /// The configuration.
+    /// </param>
+    public CircuitBreakerStorage(CircuitBreakerConfiguration configuration)
     {
       this.State = CircuitBreakerState.Closed;
+      this.Configuration = configuration;
     }
 
     #endregion
@@ -40,7 +52,7 @@ namespace Felandil.CircuitBreaker
     {
       get
       {
-        return CircuitBreakerConfiguration.FailureThresholdByCommand(this.CommandName);
+        return this.Configuration.FailureThresholdByCommand(this.CommandName);
       }
     }
 
@@ -61,7 +73,7 @@ namespace Felandil.CircuitBreaker
     {
       get
       {
-        return CircuitBreakerConfiguration.OpenTimeByCommand(this.CommandName);
+        return this.Configuration.OpenTimeByCommand(this.CommandName);
       }
     }
 
@@ -82,7 +94,7 @@ namespace Felandil.CircuitBreaker
     {
       get
       {
-        return CircuitBreakerConfiguration.SuccessThresholdByCommand(this.CommandName);
+        return this.Configuration.SuccessThresholdByCommand(this.CommandName);
       }
     }
 
@@ -94,6 +106,11 @@ namespace Felandil.CircuitBreaker
     /// Gets the command name.
     /// </summary>
     protected string CommandName { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the configuration.
+    /// </summary>
+    private CircuitBreakerConfiguration Configuration { get; set; }
 
     #endregion
 

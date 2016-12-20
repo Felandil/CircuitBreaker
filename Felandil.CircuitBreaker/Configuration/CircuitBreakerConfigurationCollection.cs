@@ -10,7 +10,7 @@ namespace Felandil.CircuitBreaker.Configuration
   /// <summary>
   /// The circuit breaker configuration collection.
   /// </summary>
-  internal class CircuitBreakerConfigurationCollection : ConfigurationElementCollection
+  public class CircuitBreakerConfigurationCollection : ConfigurationElementCollection
   {
     #region Properties
 

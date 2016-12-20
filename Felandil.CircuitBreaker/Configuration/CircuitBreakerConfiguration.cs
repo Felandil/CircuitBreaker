@@ -11,40 +11,68 @@ namespace Felandil.CircuitBreaker.Configuration
   /// <summary>
   /// The circuit breaker configuration.
   /// </summary>
-  internal static class CircuitBreakerConfiguration
+  public class CircuitBreakerConfiguration
   {
+    #region Constructors and Destructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CircuitBreakerConfiguration"/> class.
+    /// </summary>
+    public CircuitBreakerConfiguration()
+      : this(new CircuitBreakerMemoryConfigurationCache())
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CircuitBreakerConfiguration"/> class.
+    /// </summary>
+    /// <param name="configurationCache">
+    /// The configuration cache.
+    /// </param>
+    public CircuitBreakerConfiguration(IConfigurationCache configurationCache)
+    {
+      this.Cache = configurationCache;
+    }
+
+    #endregion
+
     #region Public Properties
+
+    /// <summary>
+    /// Gets or sets the cache.
+    /// </summary>
+    public IConfigurationCache Cache { get; set; }
 
     /// <summary>
     /// Gets the default failure threshold.
     /// </summary>
-    public static int DefaultFailureThreshold
+    public int DefaultFailureThreshold
     {
       get
       {
-        return GetCommand("Default").FailureThreshold;
+        return this.GetCommand("Default").FailureThreshold;
       }
     }
 
     /// <summary>
     /// Gets the default open time.
     /// </summary>
-    public static TimeSpan DefaultOpenTime
+    public TimeSpan DefaultOpenTime
     {
       get
       {
-        return GetCommand("Default").OpenTime;
+        return this.GetCommand("Default").OpenTime;
       }
     }
 
     /// <summary>
     /// Gets the default success threshold.
     /// </summary>
-    public static int DefaultSuccessThreshold
+    public int DefaultSuccessThreshold
     {
       get
       {
-        return GetCommand("Default").SuccessThreshold;
+        return this.GetCommand("Default").SuccessThreshold;
       }
     }
 
@@ -61,15 +89,15 @@ namespace Felandil.CircuitBreaker.Configuration
     /// <returns>
     /// The <see cref="int"/>.
     /// </returns>
-    public static int FailureThresholdByCommand(string commandName)
+    public int FailureThresholdByCommand(string commandName)
     {
       if (string.IsNullOrEmpty(commandName))
       {
-        return DefaultFailureThreshold;
+        return this.DefaultFailureThreshold;
       }
 
-      var config = GetCommand(commandName);
-      return config == null ? DefaultFailureThreshold : config.FailureThreshold;
+      var config = this.GetCommand(commandName);
+      return config == null ? this.DefaultFailureThreshold : config.FailureThreshold;
     }
 
     /// <summary>
@@ -81,15 +109,15 @@ namespace Felandil.CircuitBreaker.Configuration
     /// <returns>
     /// The <see cref="int"/>.
     /// </returns>
-    public static TimeSpan OpenTimeByCommand(string commandName)
+    public TimeSpan OpenTimeByCommand(string commandName)
     {
       if (string.IsNullOrEmpty(commandName))
       {
-        return DefaultOpenTime;
+        return this.DefaultOpenTime;
       }
 
-      var config = GetCommand(commandName);
-      return config == null ? DefaultOpenTime : config.OpenTime;
+      var config = this.GetCommand(commandName);
+      return config == null ? this.DefaultOpenTime : config.OpenTime;
     }
 
     /// <summary>
@@ -101,15 +129,15 @@ namespace Felandil.CircuitBreaker.Configuration
     /// <returns>
     /// The <see cref="int"/>.
     /// </returns>
-    public static int SuccessThresholdByCommand(string commandName)
+    public int SuccessThresholdByCommand(string commandName)
     {
       if (string.IsNullOrEmpty(commandName))
       {
-        return DefaultSuccessThreshold;
+        return this.DefaultSuccessThreshold;
       }
 
-      var config = GetCommand(commandName);
-      return config == null ? DefaultSuccessThreshold : config.SuccessThreshold;
+      var config = this.GetCommand(commandName);
+      return config == null ? this.DefaultSuccessThreshold : config.SuccessThreshold;
     }
 
     #endregion
@@ -125,9 +153,20 @@ namespace Felandil.CircuitBreaker.Configuration
     /// <returns>
     /// The <see cref="CircuitBreakerConfigurationSection"/>.
     /// </returns>
-    private static CircuitBreakerConfigurationElement GetCommand(string commandName)
+    private CircuitBreakerConfigurationElement GetCommand(string commandName)
     {
-      return ((CircuitBreakerConfigurationSection)ConfigurationManager.GetSection("FelandilCircuitBreaker")).Commands.GetCommandByName(commandName);
+      var element = this.Cache.GetConfigurationElement(commandName);
+
+      if (element != null)
+      {
+        return element;
+      }
+
+      element = ((CircuitBreakerConfigurationSection)ConfigurationManager.GetSection("FelandilCircuitBreaker")).Commands.GetCommandByName(commandName);
+
+      this.Cache.SaveConfigurationElement(element);
+
+      return element;
     }
 
     #endregion

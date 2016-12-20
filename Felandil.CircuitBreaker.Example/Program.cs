@@ -8,6 +8,8 @@ namespace Felandil.CircuitBreaker.Example
   using System;
   using System.Diagnostics;
 
+  using Felandil.CircuitBreaker.Configuration;
+
   /// <summary>
   /// The program.
   /// </summary>
@@ -23,7 +25,8 @@ namespace Felandil.CircuitBreaker.Example
     /// </param>
     private static void Main(string[] args)
     {
-      var storage = new CircuitBreakerDefaultStorage();
+      // var storage = new CircuitBreakerDefaultStorage();
+      var storage = new CircuitBreakerDefaultStorage(new CircuitBreakerConfiguration());
       var command = new GeocodingCircuitBreakerCommand(storage);
 
       var stopwatch = new Stopwatch();

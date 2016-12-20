@@ -8,11 +8,35 @@ namespace Felandil.CircuitBreaker
   using System;
   using System.Runtime.Caching;
 
+  using Felandil.CircuitBreaker.Configuration;
+
   /// <summary>
   /// The circuit breaker default storage.
   /// </summary>
   public class CircuitBreakerDefaultStorage : CircuitBreakerStorage
   {
+    #region Constructors and Destructors
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CircuitBreakerDefaultStorage"/> class.
+    /// </summary>
+    public CircuitBreakerDefaultStorage()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CircuitBreakerDefaultStorage"/> class.
+    /// </summary>
+    /// <param name="circuitBreakerConfiguration">
+    /// The circuit breaker configuration.
+    /// </param>
+    public CircuitBreakerDefaultStorage(CircuitBreakerConfiguration circuitBreakerConfiguration)
+      : base(circuitBreakerConfiguration)
+    {
+    }
+
+    #endregion
+
     #region Public Properties
 
     /// <summary>
